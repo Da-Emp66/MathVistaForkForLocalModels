@@ -146,11 +146,21 @@ def main():
 
     # If we were given a custom model path, load that model, otherwise use a remote service model
     if args.model_path:
-        # from models import llava
+        model_path = args.model_path
 
         logging.info(f"Loading model from {args.model_path}...")
-        # TODO: Add support for local models
-        raise NotImplementedError("Local models are not yet supported.")
+        
+        if 'intern' in model_path.lower():
+            from models import internvl3
+
+            model = internvl3.InternVL3_Model(model_path)
+        elif 'sophia' in model_path.lower():
+            from models import sophiavl_r1
+
+            model = sophiavl_r1.SophiaVL_R1_Model(model_path)
+        else:
+            # TODO: Add support for more local models
+            raise NotImplementedError(f"Local model {args.model_path} not yet supported.")
     else:
         model_name = args.azure_openai_model if args.azure_openai_model else args.model
         logging.info(f"Loading {model_name}...")
