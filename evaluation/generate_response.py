@@ -10,7 +10,7 @@ from rich.logging import RichHandler
 from tqdm import tqdm
 
 from evaluation.build_query import create_query_data
-from utilities import read_json, save_json
+from utilities.utilities import read_json, save_json
 
 
 def verify_response(response):

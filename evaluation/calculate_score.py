@@ -11,7 +11,7 @@ from Levenshtein import distance
 from rich.logging import RichHandler
 from tqdm import tqdm
 
-from utilities import read_json, save_json
+from utilities.utilities import read_json, save_json
 
 
 def get_most_similar(prediction, choices):

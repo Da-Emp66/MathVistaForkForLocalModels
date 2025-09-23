@@ -9,7 +9,7 @@ from tqdm import tqdm
 
 from evaluation.prompts.ext_ans import demo_prompt
 from models import gpt
-from utilities import read_json, save_json
+from utilities.utilities import read_json, save_json
 
 
 def verify_extraction(extraction):
