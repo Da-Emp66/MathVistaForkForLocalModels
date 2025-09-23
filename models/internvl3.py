@@ -19,13 +19,18 @@ class InternVL3_Model:
         )
 
     def get_response(self, user_prompt: str, decoded_image: Optional[Image.Image] = None):
+        content = []
+        if decoded_image is not None:
+            content = [
+                { "type": "image", "image": decoded_image },
+                { "type": "text", "text": user_prompt },
+            ]
+        else:
+            content = [{ "type": "text", "text": user_prompt }]
         messages = [
             {
                 "role": "user",
-                "content": [
-                    { "type": "image", "image": decoded_image },
-                    { "type": "text", "text": user_prompt },
-                ],
+                "content": content,
             }
         ]
         inputs = self.processor.apply_chat_template(
