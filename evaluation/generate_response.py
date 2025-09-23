@@ -147,6 +147,11 @@ def main():
     # If we were given a custom model path, load that model, otherwise use a remote service model
     if args.model_path:
         model_path = args.model_path.replace("__BACKSLASH__", "/")
+        model_paths = model_path.split("+")
+        adapter_path = None
+        if len(model_paths) > 1:
+            model_path = model_paths[0]
+            adapter_path = model_paths[1]
 
         logging.info(f"Loading model from {args.model_path}...")
         
@@ -161,6 +166,9 @@ def main():
         else:
             # TODO: Add support for more local models
             raise NotImplementedError(f"Local model {args.model_path} not yet supported.")
+        
+        if adapter_path is not None:
+            model.model.load_adapter(adapter_path)
     else:
         model_name = args.azure_openai_model if args.azure_openai_model else args.model
         logging.info(f"Loading {model_name}...")
