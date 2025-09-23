@@ -8,7 +8,7 @@ from rich.logging import RichHandler
 from tqdm import tqdm
 
 from evaluation.prompts.ext_ans import demo_prompt
-from models import gpt
+from models import internvl3
 from utilities.utilities import read_json, save_json
 
 
@@ -104,7 +104,7 @@ def main():
     # args
     label = args.response_label
 
-    model = None
+    model = internvl3.InternVL3_Model("OpenGVLab/InternVL3-8B-hf")
 
     logging.info(f"Reading {args.results_file_path}...")
     results = read_json(args.results_file_path)
@@ -135,10 +135,10 @@ def main():
     for i, pid in enumerate(tqdm(test_pids)):
         problem = results[pid]
 
-        assert label in problem
-        response = problem[label]
-        extraction = extract_answer(model, response, problem, args.quick_extract)
-        results[pid]['extraction'] = extraction
+        if label in problem:
+            response = problem[label]
+            extraction = extract_answer(model, response, problem, args.quick_extract)
+            results[pid]['extraction'] = extraction
 
         if (i % args.save_every == 0 and i > 0) or i == len(test_pids) - 1:
             save_json(results, args.results_file_path)
