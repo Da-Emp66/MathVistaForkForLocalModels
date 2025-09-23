@@ -146,7 +146,7 @@ def main():
 
     # If we were given a custom model path, load that model, otherwise use a remote service model
     if args.model_path:
-        model_path = args.model_path
+        model_path = args.model_path.replace("__BACKSLASH__", "/")
 
         logging.info(f"Loading model from {args.model_path}...")
         
