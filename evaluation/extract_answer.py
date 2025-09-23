@@ -104,25 +104,7 @@ def main():
     # args
     label = args.response_label
 
-    assert (
-        args.azure_openai_api_endpoint is not None
-    ), "Env var AZURE_OPENAI_API_ENDPOINT is not set but is required for OpenAI client."
-    assert (
-        args.azure_openai_api_key is not None
-    ), "Env var AZURE_OPENAI_API_KEY is not set but is required for OpenAI client."
-    assert (
-        args.azure_openai_api_version is not None
-    ), "Env var AZURE_OPENAI_API_VERSION is not set but is required for OpenAI client."
-    assert (
-        args.azure_openai_model is not None
-    ), "Env var AZURE_OPENAI_MODEL is not set but is required for OpenAI client."
-
-    client = AzureOpenAI(
-        azure_endpoint=args.azure_openai_api_endpoint,
-        api_key=args.azure_openai_api_key,
-        api_version=args.azure_openai_api_version,
-    )
-    model = gpt.GPT_Model(client=client, model=args.azure_openai_model)
+    model = None
 
     logging.info(f"Reading {args.results_file_path}...")
     results = read_json(args.results_file_path)
