@@ -46,7 +46,8 @@ class SophiaVL_R1_Model:
             if hasattr(image, "name"):
                 image_path = image.name # type: ignore
             if image_path is None:
-                image_path = f"tmp.{str(image.format).lower()}" # type: ignore
+                image_format = (image.format) or "jpg"
+                image_path = f"tmp.{str(image_format).lower()}" # type: ignore
                 image.save(image_path)
             image_local_path = "file://" + image_path
             messages = [
