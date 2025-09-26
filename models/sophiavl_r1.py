@@ -39,24 +39,38 @@ class SophiaVL_R1_Model:
 
     def get_response(self, user_prompt: str, decoded_image: Optional[Image.Image] = None):
         max_tokens = self.max_tokens
+
         image = decoded_image
-        image_path = None
-        if hasattr(image, "name"):
-            image_path = image.name # type: ignore
-        if image_path is None:
-            image_path = f"tmp.{str(image.format).lower()}" # type: ignore
-            image.save(image_path)
-        image_local_path = "file://" + image_path
-        messages = [
-            {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": [
-                    {"type": "text", "text": QUESTION_TEMPLATE.format(Question=user_prompt) + TYPE_TEMPLATE["free-form"]},
-                    {"image": image_local_path},
-                ]
-            },
-        ]
+        if image is not None:
+            image_path = None
+            if hasattr(image, "name"):
+                image_path = image.name # type: ignore
+            if image_path is None:
+                image_path = f"tmp.{str(image.format).lower()}" # type: ignore
+                image.save(image_path)
+            image_local_path = "file://" + image_path
+            messages = [
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": [
+                        {"type": "text", "text": QUESTION_TEMPLATE.format(Question=user_prompt) + TYPE_TEMPLATE["free-form"]},
+                        {"image": image_local_path},
+                    ]
+                },
+            ]
+        else:
+            messages = [
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": [
+                        {"type": "text", "text": QUESTION_TEMPLATE.format(Question=user_prompt) + TYPE_TEMPLATE["free-form"]},
+                    ]
+                },
+            ]
+
         text = self.processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-        inputs = self.processor(text=[text], images=[image], padding=True, return_tensors="pt")
+        if image is not None:
+            inputs = self.processor(text=[text], images=[image], padding=True, return_tensors="pt")
+        else:
+            inputs = self.processor(text=[text], padding=True, return_tensors="pt")
         inputs = inputs.to('cuda')
         output_ids = self.model.generate(**inputs, max_new_tokens=max_tokens)
         generated_ids = [output_ids[len(input_ids):] for input_ids, output_ids in zip(inputs.input_ids, output_ids)]
